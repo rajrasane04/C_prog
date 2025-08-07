@@ -1,8 +1,9 @@
-// FCFS Algorithm
+// SJF Non Preemptive Algorithm
 
 #include<stdio.h>
 #include<sys/types.h>
 #include<unistd.h>
+#include <stdbool.h>
 
 void disp(int val[],int n){
     for(int i=0;i<n;i++){
@@ -10,7 +11,39 @@ void disp(int val[],int n){
     }
 }
 
+void sortBtAt(int bt[],int at[],int p[], int n) {
+    for(int i = 0; i < n-1; i++) {
+        for(int j = 0; j < n-i-1; j++) {
+            if(bt[j] > bt[j+1]) {
+                int temp = bt[j];
+                bt[j] = bt[j+1];
+                bt[j+1] = temp;
+
+                temp = at[j];
+                at[j] = at[j+1];
+                at[j+1] = temp;
+
+                temp = p[j];
+                p[j] = p[j+1];
+                p[j+1] = temp;
+            }
+        }
+    }
+}
+
+bool ATisZero(int at[],int n){
+    for(int i=0;i<n;i++){
+        if(at[i] != 0){
+            return false;
+        }
+    }
+    return true;
+}
+
 void sortAll(int at[],int p[],int bt[],int n){  
+    if(!ATisZero(at, n)){
+        sortBtAt(bt, at, p, n);
+    }
     for(int i = 0; i < n-1; i++) {
         for(int j = 0; j < n-i-1; j++) {
             if(at[j] > at[j+1]) {
@@ -30,10 +63,37 @@ void sortAll(int at[],int p[],int bt[],int n){
     }
 }
 
-void getstwtfttat(int st[],int wt[],int ft[],int bt[],int at[],int tat[],int n){
-    st[0] = at[0];
 
-    for(int i=1;i<n;i++){
+
+void sortBtP(int bt[],int p[], int n) {
+    for(int i = 1; i < n; i++) {
+        for(int j = 1; j < n-i; j++) {
+            if(bt[j] > bt[j+1]) {
+                int temp = bt[j];
+                bt[j] = bt[j+1];
+                bt[j+1] = temp;
+
+                temp = p[j];
+                p[j] = p[j+1];
+                p[j+1] = temp;
+            }
+        }
+    }
+}
+
+void getstwtfttat(int st[],int wt[],int ft[],int bt[],int at[],int tat[],int p[],int n){
+    st[0] = at[0];
+    st[1] = st[0] + bt[0];
+
+    printf("\nBT before sort for finding st :- ");
+    disp(bt,n);
+
+    sortBtP(bt,p, n);  
+
+    printf("\nBT after sort for finding st :- ");
+    disp(bt,n);
+
+    for(int i=2;i<n;i++){
         st[i] = st[i-1] + bt[i-1];
     }
 
@@ -89,19 +149,12 @@ void dispavg(int wt[],int tat[],int n){
     }
     printf("Total Waiting Time = %d/%d = %f\n", wtsum,n, (float)wtsum/n);
 
-    // float wtavg = wtsum / n;
-
     int tatsum=0;
     for(int i=0;i<n;i++){
         tatsum = tatsum + tat[i];
     }
 
     printf("Total Turn Around Time = %d/%d = %f\n", tatsum,n, (float)tatsum/n);
-
-    // float tatavg = tatsum / n;
-
-    // printf("Average Waiting Time = %f\n", wtavg);
-    // printf("Average Turn Around Time = %f\n", tatavg);
 }
 
 void main(){
@@ -139,7 +192,7 @@ void main(){
     disp(at,n);
     
 
-    getstwtfttat(st,wt,ft,bt,at,tat,n);
+    getstwtfttat(st,wt,ft,bt,at,tat,p,n);
 
     printf("\nStart time : ");
     disp(st,n);
